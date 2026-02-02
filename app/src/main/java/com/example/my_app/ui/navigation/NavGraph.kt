@@ -11,11 +11,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.my_app.ui.screens.CatalogScreen
 import com.example.my_app.ui.screens.DetailsScreen
+import com.example.my_app.ui.screens.ProfileScreen
 import com.example.my_app.viewmodel.CatalogViewModel
 
 object NavRoutes {
     const val CATALOG = "catalog"
     const val DETAILS = "details/{itemId}"
+    const val PROFILE = "profile"
 
     fun details(itemId: Int) = "details/$itemId"
 }
@@ -35,6 +37,9 @@ fun AppNavGraph(
                 items = items,
                 onItemClick = { itemId ->
                     navController.navigate(NavRoutes.details(itemId))
+                },
+                onProfileClick = {
+                    navController.navigate(NavRoutes.PROFILE)
                 }
             )
         }
@@ -55,6 +60,12 @@ fun AppNavGraph(
                     onNavigateBack = { navController.navigateUp() }
                 )
             }
+        }
+
+        composable(NavRoutes.PROFILE) {
+            ProfileScreen(
+                onNavigateBack = { navController.navigateUp() }
+            )
         }
     }
 }
