@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -15,32 +14,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
-import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
     items: List<CatalogItem>,
     onItemClick: (Int) -> Unit,
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Каталог товаров") },
+                title = { Text(stringResource(R.string.catalog_title)) },
                 actions = {
                     IconButton(onClick = onProfileClick) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Профиль"
-                        )
+                        Icon(Icons.Default.Person, contentDescription = "Profile")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -51,101 +47,66 @@ fun CatalogScreen(
         }
     ) { paddingValues ->
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Adaptive(minSize = 160.dp),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(items) { item ->
-                ProductGridItem(
-                    item = item,
-                    onClick = { onItemClick(item.id) }
-                )
+            items(items, key = { it.id }) { item ->
+                CatalogItemCard(item = item, onClick = { onItemClick(item.id) })
             }
         }
     }
 }
 
 @Composable
-fun ProductGridItem(
-    item: CatalogItem,
-    onClick: () -> Unit
-) {
+fun CatalogItemCard(item: CatalogItem, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(280.dp)
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
-
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Column {
             Box(
                 modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .height(160.dp)
             ) {
                 Image(
                     painter = painterResource(id = item.imageRes),
                     contentDescription = item.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
-                        .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
                 )
-
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(50),
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-                ) {
+                if (item.isFavorite) {
                     Icon(
-                        imageVector = if (item.isFavorite)
-                            Icons.Default.Favorite
-                        else
-                            Icons.Default.FavoriteBorder,
-                        contentDescription = "Избранное",
-                        tint = if (item.isFavorite)
-                            MaterialTheme.colorScheme.error
-                        else
-                            MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(6.dp).size(20.dp)
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
                     )
                 }
             }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
+            Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.height(40.dp)
+                    overflow = TextOverflow.Ellipsis
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
-                    text = "${item.price.toInt()} ₸",
+                    text = stringResource(R.string.price_format, item.price),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

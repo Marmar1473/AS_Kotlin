@@ -10,3 +10,9 @@ data class CatalogItem(
     val isFavorite: Boolean = false,
     @DrawableRes val imageRes: Int
 )
+
+sealed interface CatalogUiState {
+    data object Loading : CatalogUiState
+    data class Success(val items: List<CatalogItem>) : CatalogUiState
+    data class Error(val message: String) : CatalogUiState
+}

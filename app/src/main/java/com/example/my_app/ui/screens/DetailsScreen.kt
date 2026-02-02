@@ -15,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,115 +31,69 @@ fun DetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Детали товара") },
+                title = { Text(stringResource(R.string.details_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                }
             )
         }
-    ) { paddingValues ->
+    ) { padding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .padding(padding)
                 .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
             Image(
                 painter = painterResource(id = item.imageRes),
-                contentDescription = item.title,
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Fit
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = stringResource(R.string.price_format, item.price),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Text(
+                text = item.description,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = onToggleFavorite,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (item.isFavorite) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primary,
+                    contentColor = if (item.isFavorite) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimary
+                )
             ) {
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = null
                 )
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "${item.price.toInt()} ₸",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Описание",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = if (item.isFavorite) stringResource(R.string.remove_from_favorite) else stringResource(R.string.add_to_favorite)
                 )
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = item.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = onToggleFavorite,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (item.isFavorite)
-                            MaterialTheme.colorScheme.error
-                        else
-                            MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = if (item.isFavorite)
-                            Icons.Default.Favorite
-                        else
-                            Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = if (item.isFavorite)
-                            "Удалить из избранного"
-                        else
-                            "Добавить в избранное",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
             }
         }
     }

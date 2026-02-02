@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">my_app</string>
+    <string name="app_name">My Catalog App</string>
+    <string name="catalog_title">Каталог товаров</string>
+    <string name="profile_title">Профиль</string>
+    <string name="details_title">Детали товара</string>
+    <string name="price_format">%1$.0f ₸</string>
+    <string name="add_to_favorite">В избранное</string>
+    <string name="remove_from_favorite">Убрать из избранного</string>
+    <string name="settings">Настройки</string>
+    <string name="logout">Выйти</string>
+    <string name="back">Назад</string>
+    <string name="dark_mode">Темная тема</string>
+    <string name="error_item_not_found">Товар не найден</string>
 </resources>

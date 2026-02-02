@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
 import com.example.my_app.ui.navigation.AppNavGraph
 import com.example.my_app.ui.theme.My_appTheme
@@ -14,12 +19,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            My_appTheme {
+            var isDarkTheme by remember { mutableStateOf(false) }
+            val systemDark = isSystemInDarkTheme()
+
+            My_appTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
                 AppNavGraph(
                     navController = navController,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    isDarkTheme = isDarkTheme,
+                    onThemeToggle = { isDarkTheme = !isDarkTheme }
                 )
             }
         }
