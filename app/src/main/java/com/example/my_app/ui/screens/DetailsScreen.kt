@@ -72,7 +72,7 @@ fun DetailsScreen(
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = item.title,
@@ -87,12 +87,9 @@ fun DetailsScreen(
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            Text(
-                text = item.description,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Text(text = item.description, style = MaterialTheme.typography.bodyLarge)
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = onToggleFavorite,
@@ -100,16 +97,8 @@ fun DetailsScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (item.isFavorite) {
-                        MaterialTheme.colorScheme.errorContainer
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    },
-                    contentColor = if (item.isFavorite) {
-                        MaterialTheme.colorScheme.onErrorContainer
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary
-                    }
+                    containerColor = if (item.isFavorite) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primary,
+                    contentColor = if (item.isFavorite) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Icon(
@@ -118,11 +107,10 @@ fun DetailsScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (item.isFavorite) {
+                    text = if (item.isFavorite)
                         stringResource(R.string.remove_from_favorite)
-                    } else {
+                    else
                         stringResource(R.string.add_to_favorite)
-                    }
                 )
             }
         }

@@ -21,7 +21,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val systemDark = isSystemInDarkTheme()
-
             val darkThemeState = rememberSaveable { mutableStateOf(systemDark) }
 
             My_appTheme(darkTheme = darkThemeState.value) {
@@ -31,9 +30,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     viewModel = viewModel,
                     isDarkTheme = darkThemeState.value,
-                    onThemeToggle = {
-                        darkThemeState.value = !darkThemeState.value
-                    }
+                    onThemeToggle = { darkThemeState.value = !darkThemeState.value }
                 )
             }
         }

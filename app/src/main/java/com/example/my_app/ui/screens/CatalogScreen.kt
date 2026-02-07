@@ -5,9 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,17 +18,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,65 +39,44 @@ import androidx.compose.ui.unit.dp
 import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(
+fun CatalogGridScreen(
     items: List<CatalogItem>,
     onItemClick: (Int) -> Unit,
-    onProfileClick: () -> Unit
+    onToggleFavorite: (Int) -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.catalog_title)) },
-                actions = {
-                    IconButton(onClick = onProfileClick) {
-                        Icon(Icons.Default.Person, contentDescription = null)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 160.dp),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(items, key = { it.id }) { item ->
+            CatalogItemCard(
+                item = item,
+                onClick = { onItemClick(item.id) },
+                onToggleFavorite = { onToggleFavorite(item.id) }
             )
-        }
-    ) { paddingValues ->
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 160.dp),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        ) {
-            items(items, key = { it.id }) { item ->
-                CatalogItemCard(
-                    item = item,
-                    onClick = { onItemClick(item.id) }
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun CatalogItemCard(
+fun CatalogItemCard(
     item: CatalogItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit
 ) {
-    val shape = RoundedCornerShape(16.dp)
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(280.dp)
             .clickable(onClick = onClick),
-        shape = shape,
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,14 +92,16 @@ private fun CatalogItemCard(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                if (item.isFavorite) {
+                IconButton(
+                    onClick = onToggleFavorite,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                ) {
                     Icon(
-                        imageVector = Icons.Default.Favorite,
+                        imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
+                        tint = if (item.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -136,7 +113,7 @@ private fun CatalogItemCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.price_format, item.price),
                     style = MaterialTheme.typography.titleMedium,

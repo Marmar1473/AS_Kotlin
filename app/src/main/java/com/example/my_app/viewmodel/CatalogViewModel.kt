@@ -26,11 +26,6 @@ class CatalogViewModel : ViewModel() {
         }
     }
 
-    fun getItemById(id: Int): CatalogItem? {
-        val success = _uiState.value as? CatalogUiState.Success ?: return null
-        return success.items.firstOrNull { it.id == id }
-    }
-
     private fun generateCatalog(): List<CatalogItem> {
         return listOf(
             CatalogItem(
