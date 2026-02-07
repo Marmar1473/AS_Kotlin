@@ -1,19 +1,39 @@
 package com.example.my_app.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,7 +56,7 @@ fun CatalogScreen(
                 title = { Text(stringResource(R.string.catalog_title)) },
                 actions = {
                     IconButton(onClick = onProfileClick) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile")
+                        Icon(Icons.Default.Person, contentDescription = null)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -56,26 +76,39 @@ fun CatalogScreen(
                 .fillMaxSize()
         ) {
             items(items, key = { it.id }) { item ->
-                CatalogItemCard(item = item, onClick = { onItemClick(item.id) })
+                CatalogItemCard(
+                    item = item,
+                    onClick = { onItemClick(item.id) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun CatalogItemCard(item: CatalogItem, onClick: () -> Unit) {
+private fun CatalogItemCard(
+    item: CatalogItem,
+    onClick: () -> Unit
+) {
+    val shape = RoundedCornerShape(16.dp)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(280.dp)
             .clickable(onClick = onClick),
+        shape = shape,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
+
             Box(
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
+                    .height(170.dp)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    .background(Color.White),
+                contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(id = item.imageRes),
@@ -83,6 +116,7 @@ fun CatalogItemCard(item: CatalogItem, onClick: () -> Unit) {
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()
                 )
+
                 if (item.isFavorite) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
@@ -94,6 +128,7 @@ fun CatalogItemCard(item: CatalogItem, onClick: () -> Unit) {
                     )
                 }
             }
+
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = item.title,
@@ -101,7 +136,7 @@ fun CatalogItemCard(item: CatalogItem, onClick: () -> Unit) {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = stringResource(R.string.price_format, item.price),
                     style = MaterialTheme.typography.titleMedium,

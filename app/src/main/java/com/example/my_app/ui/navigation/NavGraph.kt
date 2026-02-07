@@ -22,8 +22,10 @@ import com.example.my_app.viewmodel.CatalogViewModel
 
 object NavRoutes {
     const val CATALOG = "catalog"
-    const val DETAILS = "details/{itemId}"
     const val PROFILE = "profile"
+
+    private const val ITEM_ID = "itemId"
+    const val DETAILS = "details/{$ITEM_ID}"
 
     fun details(itemId: Int) = "details/$itemId"
 }
@@ -44,23 +46,21 @@ fun AppNavGraph(
 
             when (val state = uiState) {
                 is CatalogUiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
+
                 is CatalogUiState.Success -> {
                     CatalogScreen(
                         items = state.items,
-                        onItemClick = { itemId ->
-                            navController.navigate(NavRoutes.details(itemId))
-                        },
-                        onProfileClick = {
-                            navController.navigate(NavRoutes.PROFILE)
-                        }
+                        onItemClick = { id -> navController.navigate(NavRoutes.details(id)) },
+                        onProfileClick = { navController.navigate(NavRoutes.PROFILE) }
                     )
                 }
+
                 is CatalogUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(text = state.message)
                     }
                 }
@@ -71,19 +71,19 @@ fun AppNavGraph(
             route = NavRoutes.DETAILS,
             arguments = listOf(navArgument("itemId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getInt("itemId")
-            val item = itemId?.let { viewModel.getItemById(it) }
+            val itemId = backStackEntry.arguments?.getInt("itemId") ?: -1
+            val item = viewModel.getItemById(itemId)
 
-            if (item != null) {
+            if (item == null) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Ошибка: товар не найден")
+                }
+            } else {
                 DetailsScreen(
                     item = item,
                     onToggleFavorite = { viewModel.toggleFavorite(item.id) },
                     onNavigateBack = { navController.navigateUp() }
                 )
-            } else {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Error: Item not found")
-                }
             }
         }
 

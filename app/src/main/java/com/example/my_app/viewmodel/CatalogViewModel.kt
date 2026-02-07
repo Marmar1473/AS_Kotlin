@@ -1,7 +1,6 @@
 package com.example.my_app.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
 import com.example.my_app.model.CatalogUiState
@@ -9,34 +8,27 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class CatalogViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow<CatalogUiState>(CatalogUiState.Loading)
+    private val _uiState = MutableStateFlow<CatalogUiState>(
+        CatalogUiState.Success(generateCatalog())
+    )
     val uiState: StateFlow<CatalogUiState> = _uiState.asStateFlow()
 
-    private var currentItems = generateCatalog()
-
-    init {
-        loadData()
-    }
-
-    private fun loadData() {
-        viewModelScope.launch {
-            _uiState.value = CatalogUiState.Success(currentItems)
-        }
-    }
-
     fun toggleFavorite(id: Int) {
-        currentItems = currentItems.map { item ->
-            if (item.id == id) item.copy(isFavorite = !item.isFavorite) else item
+        _uiState.update { state ->
+            val success = state as? CatalogUiState.Success ?: return@update state
+            val updated = success.items.map { item ->
+                if (item.id == id) item.copy(isFavorite = !item.isFavorite) else item
+            }
+            CatalogUiState.Success(updated)
         }
-        _uiState.update { CatalogUiState.Success(currentItems) }
     }
 
     fun getItemById(id: Int): CatalogItem? {
-        return currentItems.find { it.id == id }
+        val success = _uiState.value as? CatalogUiState.Success ?: return null
+        return success.items.firstOrNull { it.id == id }
     }
 
     private fun generateCatalog(): List<CatalogItem> {
