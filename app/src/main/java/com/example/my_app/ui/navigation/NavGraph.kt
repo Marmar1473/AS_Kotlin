@@ -33,6 +33,13 @@ import com.example.my_app.ui.screens.CatalogGridScreen
 import com.example.my_app.ui.screens.DetailsScreen
 import com.example.my_app.ui.screens.ProfileScreen
 import com.example.my_app.viewmodel.CatalogViewModel
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import com.example.my_app.ui.screens.AddEditItemDialog
 
 object NavRoutes {
     const val TABS = "tabs"
@@ -83,6 +90,13 @@ fun AppNavGraph(
                 DetailsScreen(
                     item = item,
                     onToggleFavorite = { viewModel.toggleFavorite(item.id) },
+                    onUpdate = { t, d, p ->
+                        viewModel.updateItem(item.id, t, d, p)
+                    },
+                    onDelete = {
+                        viewModel.deleteItem(item.id)
+                        navController.navigateUp()
+                    },
                     onNavigateBack = { navController.navigateUp() }
                 )
             }
@@ -113,6 +127,7 @@ private fun TabsScaffold(
         NavRoutes.TAB_FAVORITES -> "Избранные"
         else -> "Каталог товаров"
     }
+    var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -152,6 +167,13 @@ private fun TabsScaffold(
                     icon = { Icon(Icons.Default.Favorite, contentDescription = null) },
                     label = { Text("Избранные") }
                 )
+            }
+        },
+        floatingActionButton = {
+            if (currentTabRoute == NavRoutes.TAB_CATALOG) {
+                FloatingActionButton(onClick = { showAddDialog = true }) {
+                    Icon(Icons.Default.Add, contentDescription = "Добавить товар")
+                }
             }
         }
     ) { padding ->
@@ -212,5 +234,16 @@ private fun TabsScaffold(
                 }
             }
         }
+    }
+
+    if (showAddDialog) {
+        AddEditItemDialog(
+            title = "Добавить товар",
+            onDismiss = { showAddDialog = false },
+            onConfirm = { t, d, p ->
+                viewModel.addItem(t, d, p)
+                showAddDialog = false
+            }
+        )
     }
 }

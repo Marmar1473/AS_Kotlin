@@ -26,6 +26,71 @@ class CatalogViewModel : ViewModel() {
         }
     }
 
+    private val productImages = listOf(
+        R.drawable.product_1,
+        R.drawable.product_2,
+        R.drawable.product_3,
+        R.drawable.product_4,
+        R.drawable.product_5,
+        R.drawable.product_6,
+        R.drawable.product_7,
+        R.drawable.product_8,
+        R.drawable.product_9,
+        R.drawable.product_10,
+        R.drawable.product_11,
+        R.drawable.product_12
+    )
+
+    fun addItem(
+        title: String,
+        description: String,
+        price: Double
+    ) {
+        _uiState.update { state ->
+            val success = state as? CatalogUiState.Success ?: return@update state
+            val nextId = (success.items.maxOfOrNull { it.id } ?: 0) + 1
+            val imageRes = productImages[(nextId - 1) % productImages.size]
+
+            val newItem = CatalogItem(
+                id = nextId,
+                title = title.trim(),
+                description = description.trim(),
+                price = price,
+                imageRes = imageRes
+            )
+
+            CatalogUiState.Success(listOf(newItem) + success.items)
+        }
+    }
+
+    fun deleteItem(id: Int) {
+        _uiState.update { state ->
+            val success = state as? CatalogUiState.Success ?: return@update state
+            CatalogUiState.Success(success.items.filterNot { it.id == id })
+        }
+    }
+
+    fun updateItem(
+        id: Int,
+        title: String,
+        description: String,
+        price: Double
+    ) {
+        _uiState.update { state ->
+            val success = state as? CatalogUiState.Success ?: return@update state
+            val updated = success.items.map { item ->
+                if (item.id == id) {
+                    item.copy(
+                        title = title.trim(),
+                        description = description.trim(),
+                        price = price
+                    )
+                } else item
+            }
+            CatalogUiState.Success(updated)
+        }
+    }
+
     private fun generateCatalog(): List<CatalogItem> {
         return listOf(
             CatalogItem(
