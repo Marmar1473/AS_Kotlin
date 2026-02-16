@@ -38,7 +38,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import com.example.my_app.ui.screens.AddEditItemDialog
 
 object NavRoutes {
@@ -239,10 +238,9 @@ private fun TabsScaffold(
     if (showAddDialog) {
         AddEditItemDialog(
             title = "Добавить товар",
-            onDismiss = { showAddDialog = false },
+            onDismiss = { },
             onConfirm = { t, d, p ->
                 viewModel.addItem(t, d, p)
-                showAddDialog = false
             }
         )
     }

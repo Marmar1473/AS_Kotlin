@@ -73,11 +73,9 @@ fun AddEditItemDialog(
             TextButton(onClick = {
                 val price = p.replace(",", ".").toDoubleOrNull()
                 if (t.isBlank()) {
-                    error = "Введите название"
                     return@TextButton
                 }
                 if (price == null) {
-                    error = "Цена должна быть числом"
                     return@TextButton
                 }
                 onConfirm(t, d, price)

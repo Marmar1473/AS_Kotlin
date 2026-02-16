@@ -52,7 +52,6 @@ fun DetailsScreen(
     onDelete: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    // Состояния для диалогов
     var showEditDialog by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
@@ -155,35 +154,31 @@ fun DetailsScreen(
         }
     }
 
-    // Диалог редактирования товара
     if (showEditDialog) {
         AddEditItemDialog(
             title = "Обновить товар",
             initialTitle = item.title,
             initialDescription = item.description,
             initialPrice = item.price.toString(),
-            onDismiss = { showEditDialog = false },
+            onDismiss = { },
             onConfirm = { t, d, p ->
                 onUpdate(t, d, p)
-                showEditDialog = false
             }
         )
     }
 
-    // Диалог подтверждения удаления
     if (showDeleteConfirm) {
         AlertDialog(
-            onDismissRequest = { showDeleteConfirm = false },
+            onDismissRequest = { },
             title = { Text("Удалить товар?") },
             text = { Text("Это действие нельзя отменить.") },
             confirmButton = {
                 TextButton(onClick = {
-                    showDeleteConfirm = false
                     onDelete()
                 }) { Text("Удалить") }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) { Text("Отмена") }
+                TextButton(onClick = { }) { Text("Отмена") }
             }
         )
     }
