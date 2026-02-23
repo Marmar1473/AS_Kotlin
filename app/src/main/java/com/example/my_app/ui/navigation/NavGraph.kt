@@ -238,9 +238,12 @@ private fun TabsScaffold(
     if (showAddDialog) {
         AddEditItemDialog(
             title = "Добавить товар",
-            onDismiss = { },
+            onDismiss = {
+                showAddDialog = false
+            },
             onConfirm = { t, d, p ->
                 viewModel.addItem(t, d, p)
+                showAddDialog = false
             }
         )
     }

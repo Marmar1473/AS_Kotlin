@@ -160,25 +160,41 @@ fun DetailsScreen(
             initialTitle = item.title,
             initialDescription = item.description,
             initialPrice = item.price.toString(),
-            onDismiss = { },
+            onDismiss = {
+                showEditDialog = false
+            },
             onConfirm = { t, d, p ->
                 onUpdate(t, d, p)
+                showEditDialog = false
             }
         )
     }
 
     if (showDeleteConfirm) {
         AlertDialog(
-            onDismissRequest = { },
+            onDismissRequest = {
+                showDeleteConfirm = false
+            },
             title = { Text("Удалить товар?") },
             text = { Text("Это действие нельзя отменить.") },
             confirmButton = {
-                TextButton(onClick = {
-                    onDelete()
-                }) { Text("Удалить") }
+                TextButton(
+                    onClick = {
+                        onDelete()
+                        showDeleteConfirm = false
+                    }
+                ) {
+                    Text("Удалить")
+                }
             },
             dismissButton = {
-                TextButton(onClick = { }) { Text("Отмена") }
+                TextButton(
+                    onClick = {
+                        showDeleteConfirm = false
+                    }
+                ) {
+                    Text("Отмена")
+                }
             }
         )
     }
