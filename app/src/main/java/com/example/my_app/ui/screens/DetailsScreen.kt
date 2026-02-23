@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
+import coil.compose.AsyncImage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +49,7 @@ import com.example.my_app.model.CatalogItem
 fun DetailsScreen(
     item: CatalogItem,
     onToggleFavorite: () -> Unit,
-    onUpdate: (title: String, description: String, price: Double) -> Unit,
+    onUpdate: (title: String, description: String, price: Double, imageUri: String?) -> Unit,
     onDelete: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -73,15 +74,17 @@ fun DetailsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Image(
-                painter = painterResource(id = item.imageRes),
+            AsyncImage(
+                model = item.imageUri,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.White),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
+                placeholder = painterResource(R.drawable.ic_launcher_background),
+                error = painterResource(R.drawable.ic_launcher_background)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -160,11 +163,10 @@ fun DetailsScreen(
             initialTitle = item.title,
             initialDescription = item.description,
             initialPrice = item.price.toString(),
-            onDismiss = {
-                showEditDialog = false
-            },
-            onConfirm = { t, d, p ->
-                onUpdate(t, d, p)
+            initialImageUri = item.imageUri,
+            onDismiss = { showEditDialog = false },
+            onConfirm = { t, d, p, uri ->
+                onUpdate(t, d, p, uri)
                 showEditDialog = false
             }
         )

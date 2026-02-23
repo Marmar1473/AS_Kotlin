@@ -38,6 +38,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
+import coil.compose.AsyncImage
+
 
 @Composable
 fun CatalogGridScreen(
@@ -85,11 +87,13 @@ fun CatalogItemCard(
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = item.imageRes),
+                AsyncImage(
+                    model = item.imageUri,
                     contentDescription = item.title,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                    placeholder = painterResource(R.drawable.ic_launcher_background),
+                    error = painterResource(R.drawable.ic_launcher_background)
                 )
 
                 IconButton(

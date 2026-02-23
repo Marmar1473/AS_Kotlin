@@ -10,5 +10,6 @@ data class CatalogItemEntity(
     val title: String,
     val description: String,
     val price: Double,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val imageUri: String? = null
 )

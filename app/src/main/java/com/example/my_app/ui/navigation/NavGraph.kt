@@ -89,8 +89,8 @@ fun AppNavGraph(
                 DetailsScreen(
                     item = item,
                     onToggleFavorite = { viewModel.toggleFavorite(item.id) },
-                    onUpdate = { t, d, p ->
-                        viewModel.updateItem(item.id, t, d, p)
+                    onUpdate = { t, d, p, uri ->
+                        viewModel.updateItem(item.id, t, d, p, uri)
                     },
                     onDelete = {
                         viewModel.deleteItem(item.id)
@@ -241,8 +241,8 @@ private fun TabsScaffold(
             onDismiss = {
                 showAddDialog = false
             },
-            onConfirm = { t, d, p ->
-                viewModel.addItem(t, d, p)
+            onConfirm = { t, d, p, uri ->
+                viewModel.addItem(t, d, p, uri)
                 showAddDialog = false
             }
         )

@@ -8,7 +8,7 @@ data class CatalogItem(
     val description: String,
     val price: Double,
     val isFavorite: Boolean = false,
-    @param:DrawableRes val imageRes: Int
+    val imageUri: String? = null
 )
 
 sealed interface CatalogUiState {

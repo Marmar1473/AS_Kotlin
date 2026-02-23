@@ -48,6 +48,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.coil.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.dagger.compiler)

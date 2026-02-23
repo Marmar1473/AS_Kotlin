@@ -34,19 +34,20 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun addItem(title: String, description: String, price: Double) {
+    fun addItem(title: String, description: String, price: Double, imageUri: String? = null) {
         viewModelScope.launch {
             repository.insert(
                 CatalogItemEntity(
                     title = title,
                     description = description,
-                    price = price
+                    price = price,
+                    imageUri = imageUri
                 )
             )
         }
     }
 
-    fun updateItem(id: Int, title: String, description: String, price: Double) {
+    fun updateItem(id: Int, title: String, description: String, price: Double, imageUri: String? = null) {
         viewModelScope.launch {
             val current = (uiState.value as? CatalogUiState.Success)
                 ?.items?.firstOrNull { it.id == id } ?: return@launch
@@ -57,6 +58,7 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
                     description = description,
                     price = price,
                     isFavorite = current.isFavorite,
+                    imageUri = imageUri ?: current.imageUri
                 )
             )
         }
@@ -91,5 +93,6 @@ fun CatalogItemEntity.toCatalogItem() = CatalogItem(
     description = description,
     price = price,
     isFavorite = isFavorite,
-    imageRes = R.drawable.ic_launcher_background
+    imageUri = imageUri
 )
+
