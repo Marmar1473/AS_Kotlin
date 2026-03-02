@@ -86,17 +86,38 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
 
     fun toggleFavorite(id: Int) {
         viewModelScope.launch {
-            val current = (uiState.value as? CatalogUiState.Success)
-                ?.items?.firstOrNull { it.id == id } ?: return@launch
-            repository.update(
-                CatalogItemEntity(
-                    id = id,
-                    title = current.title,
-                    description = current.description,
-                    price = current.price,
-                    isFavorite = !current.isFavorite
+            // Ищем в локальной БД
+            val fromDb = (uiState.value as? CatalogUiState.Success)
+                ?.items?.firstOrNull { it.id == id }
+
+            if (fromDb != null) {
+                // Товар уже в БД — просто инвертируем isFavorite
+                repository.update(
+                    CatalogItemEntity(
+                        id = fromDb.id,
+                        title = fromDb.title,
+                        description = fromDb.description,
+                        price = fromDb.price,
+                        isFavorite = !fromDb.isFavorite,
+                        imageUri = fromDb.imageUri
+                    )
                 )
-            )
+            } else {
+                // Товара нет в БД — ищем в API и сохраняем с isFavorite = true
+                val fromApi = (apiState.value as? ApiUiState.Success)
+                    ?.items?.firstOrNull { it.id == id } ?: return@launch
+
+                repository.insert(
+                    CatalogItemEntity(
+                        id = fromApi.id,
+                        title = fromApi.title,
+                        description = fromApi.description,
+                        price = fromApi.price,
+                        isFavorite = true,
+                        imageUri = fromApi.imageUri
+                    )
+                )
+            }
         }
     }
 }

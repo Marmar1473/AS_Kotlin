@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import com.example.my_app.ui.screens.AddEditItemDialog
 import androidx.compose.material.icons.filled.Cloud
 import com.example.my_app.ui.screens.ApiScreen
+import com.example.my_app.viewmodel.ApiUiState
 
 object NavRoutes {
     const val TABS = "tabs"
@@ -81,9 +82,12 @@ fun AppNavGraph(
             val itemId = entry.arguments?.getInt("itemId") ?: -1
 
             val uiState by viewModel.uiState.collectAsState()
+            val apiState by viewModel.apiState.collectAsState()
+
             val item = (uiState as? CatalogUiState.Success)
-                ?.items
-                ?.firstOrNull { it.id == itemId }
+                ?.items?.firstOrNull { it.id == itemId }
+                ?: (apiState as? ApiUiState.Success)
+                    ?.items?.firstOrNull { it.id == itemId }
 
             if (item == null) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
