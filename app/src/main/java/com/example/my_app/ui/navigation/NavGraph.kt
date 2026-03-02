@@ -39,6 +39,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.my_app.ui.screens.AddEditItemDialog
+import androidx.compose.material.icons.filled.Cloud
+import com.example.my_app.ui.screens.ApiScreen
 
 object NavRoutes {
     const val TABS = "tabs"
@@ -49,6 +51,8 @@ object NavRoutes {
 
     const val TAB_CATALOG = "tab_catalog"
     const val TAB_FAVORITES = "tab_favorites"
+
+    const val TAB_API = "tab_api"
 }
 
 @Composable
@@ -124,8 +128,10 @@ private fun TabsScaffold(
 
     val title = when (currentTabRoute) {
         NavRoutes.TAB_FAVORITES -> "Избранные"
+        NavRoutes.TAB_API -> "Товары из сети"
         else -> "Каталог товаров"
     }
+
     var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -165,6 +171,19 @@ private fun TabsScaffold(
                     },
                     icon = { Icon(Icons.Default.Favorite, contentDescription = null) },
                     label = { Text("Избранные") }
+                )
+
+                NavigationBarItem(
+                    selected = currentTabRoute == NavRoutes.TAB_API,
+                    onClick = {
+                        tabNavController.navigate(NavRoutes.TAB_API) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(NavRoutes.TAB_CATALOG) { saveState = true }
+                        }
+                    },
+                    icon = { Icon(Icons.Default.Cloud, contentDescription = null) },
+                    label = { Text("Из сети") }
                 )
             }
         },
@@ -231,6 +250,16 @@ private fun TabsScaffold(
                         }
                     }
                 }
+            }
+
+            composable(NavRoutes.TAB_API) {
+                val apiState by viewModel.apiState.collectAsState()
+                ApiScreen(
+                    apiState = apiState,
+                    onRetry = { viewModel.loadFromApi() },
+                    onItemClick = { id -> rootNavController.navigate(NavRoutes.details(id)) },
+                    onToggleFavorite = { id -> viewModel.toggleFavorite(id) }
+                )
             }
         }
     }
