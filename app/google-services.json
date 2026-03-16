@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "566771585712",
+    "project_id": "android-studio-dc351",
+    "storage_bucket": "android-studio-dc351.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566771585712:android:bbfd7583c951a16cfe2175",
+        "android_client_info": {
+          "package_name": "com.example.my_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1dwvSgU8vy3l_F4IVOJzl5Ldw8qsBvmY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

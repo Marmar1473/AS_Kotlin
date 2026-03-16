@@ -10,11 +10,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.rememberNavController
 import com.example.my_app.ui.navigation.AppNavGraph
 import com.example.my_app.ui.theme.My_appTheme
+import com.example.my_app.viewmodel.AuthViewModel
 import com.example.my_app.viewmodel.CatalogViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: CatalogViewModel by viewModels()
+    private val catalogViewModel: CatalogViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +30,8 @@ class MainActivity : ComponentActivity() {
 
                 AppNavGraph(
                     navController = navController,
-                    viewModel = viewModel,
+                    catalogViewModel = catalogViewModel,
+                    authViewModel = authViewModel,
                     isDarkTheme = darkThemeState.value,
                     onThemeToggle = { darkThemeState.value = !darkThemeState.value }
                 )

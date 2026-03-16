@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -19,6 +22,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -29,21 +35,20 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.my_app.model.CatalogUiState
+import com.example.my_app.ui.screens.AddEditItemDialog
+import com.example.my_app.ui.screens.ApiScreen
 import com.example.my_app.ui.screens.CatalogGridScreen
 import com.example.my_app.ui.screens.DetailsScreen
+import com.example.my_app.ui.screens.LoginScreen
 import com.example.my_app.ui.screens.ProfileScreen
-import com.example.my_app.viewmodel.CatalogViewModel
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.example.my_app.ui.screens.AddEditItemDialog
-import androidx.compose.material.icons.filled.Cloud
-import com.example.my_app.ui.screens.ApiScreen
+import com.example.my_app.ui.screens.RegisterScreen
 import com.example.my_app.viewmodel.ApiUiState
+import com.example.my_app.viewmodel.AuthViewModel
+import com.example.my_app.viewmodel.CatalogViewModel
 
 object NavRoutes {
+    const val LOGIN = "login"
+    const val REGISTER = "register"
     const val TABS = "tabs"
     const val DETAILS = "details/{itemId}"
     const val PROFILE = "profile"
@@ -52,26 +57,59 @@ object NavRoutes {
 
     const val TAB_CATALOG = "tab_catalog"
     const val TAB_FAVORITES = "tab_favorites"
-
     const val TAB_API = "tab_api"
 }
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    viewModel: CatalogViewModel,
+    catalogViewModel: CatalogViewModel,
+    authViewModel: AuthViewModel,
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit
 ) {
+    val startDest = if (authViewModel.isUserLoggedIn()) NavRoutes.TABS else NavRoutes.LOGIN
+
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.TABS
+        startDestination = startDest
     ) {
+        composable(NavRoutes.LOGIN) {
+            LoginScreen(
+                viewModel = authViewModel,
+                onNavigateToRegister = {
+                    navController.navigate(NavRoutes.REGISTER) {
+                        popUpTo(NavRoutes.LOGIN) { inclusive = true }
+                    }
+                },
+                onLoginSuccess = {
+                    navController.navigate(NavRoutes.TABS) {
+                        popUpTo(NavRoutes.LOGIN) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.REGISTER) {
+            RegisterScreen(
+                viewModel = authViewModel,
+                onNavigateToLogin = {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(NavRoutes.REGISTER) { inclusive = true }
+                    }
+                },
+                onRegisterSuccess = {
+                    navController.navigate(NavRoutes.TABS) {
+                        popUpTo(NavRoutes.REGISTER) { inclusive = true }
+                    }
+                }
+            )
+        }
 
         composable(NavRoutes.TABS) {
             TabsScaffold(
                 rootNavController = navController,
-                viewModel = viewModel
+                viewModel = catalogViewModel
             )
         }
 
@@ -81,8 +119,8 @@ fun AppNavGraph(
         ) { entry ->
             val itemId = entry.arguments?.getInt("itemId") ?: -1
 
-            val uiState by viewModel.uiState.collectAsState()
-            val apiState by viewModel.apiState.collectAsState()
+            val uiState by catalogViewModel.uiState.collectAsState()
+            val apiState by catalogViewModel.apiState.collectAsState()
 
             val item = (uiState as? CatalogUiState.Success)
                 ?.items?.firstOrNull { it.id == itemId }
@@ -96,12 +134,12 @@ fun AppNavGraph(
             } else {
                 DetailsScreen(
                     item = item,
-                    onToggleFavorite = { viewModel.toggleFavorite(item.id) },
+                    onToggleFavorite = { catalogViewModel.toggleFavorite(item.id) },
                     onUpdate = { t, d, p, uri ->
-                        viewModel.updateItem(item.id, t, d, p, uri)
+                        catalogViewModel.updateItem(item.id, t, d, p, uri)
                     },
                     onDelete = {
-                        viewModel.deleteItem(item.id)
+                        catalogViewModel.deleteItem(item.id)
                         navController.navigateUp()
                     },
                     onNavigateBack = { navController.navigateUp() }
@@ -113,7 +151,13 @@ fun AppNavGraph(
             ProfileScreen(
                 isDarkTheme = isDarkTheme,
                 onThemeToggle = onThemeToggle,
-                onNavigateBack = { navController.navigateUp() }
+                onNavigateBack = { navController.navigateUp() },
+                onLogout = {
+                    authViewModel.signOut()
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(NavRoutes.TABS) { inclusive = true }
+                    }
+                }
             )
         }
     }
