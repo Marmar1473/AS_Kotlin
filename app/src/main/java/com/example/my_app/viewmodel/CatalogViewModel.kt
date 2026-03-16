@@ -11,7 +11,7 @@ import com.example.my_app.model.CatalogItem
 import com.example.my_app.model.CatalogUiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
+
 class CatalogViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: CatalogRepository
