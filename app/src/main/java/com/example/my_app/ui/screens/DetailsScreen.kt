@@ -1,6 +1,5 @@
 package com.example.my_app.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -42,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
 import coil.compose.AsyncImage
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +94,7 @@ fun DetailsScreen(
             )
 
             Text(
-                text = stringResource(R.string.price_format, item.price),
+                text = "${formatPrice(item.price)} ₸",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(vertical = 8.dp)

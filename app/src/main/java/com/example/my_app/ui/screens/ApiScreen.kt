@@ -15,7 +15,7 @@ fun ApiScreen(
     onItemClick: (Int) -> Unit,
     onToggleFavorite: (Int) -> Unit
 ) {
-    when (val state = apiState) {
+    when (apiState) {
         is ApiUiState.Loading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -28,7 +28,7 @@ fun ApiScreen(
 
         is ApiUiState.Success -> {
             CatalogGridScreen(
-                items = state.items,
+                items = apiState.items,
                 onItemClick = onItemClick,
                 onToggleFavorite = onToggleFavorite
             )
@@ -41,7 +41,7 @@ fun ApiScreen(
                     modifier = Modifier.padding(24.dp)
                 ) {
                     Text(
-                        text = "⚠️ ${state.message}",
+                        text = "⚠️ ${apiState.message}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.error
                     )

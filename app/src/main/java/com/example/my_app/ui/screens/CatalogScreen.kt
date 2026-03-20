@@ -1,6 +1,5 @@
 package com.example.my_app.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,14 +31,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.my_app.R
 import com.example.my_app.model.CatalogItem
 import coil.compose.AsyncImage
-
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 @Composable
 fun CatalogGridScreen(
@@ -119,7 +118,7 @@ fun CatalogItemCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.price_format, item.price),
+                    text = "${formatPrice(item.price)} ₸",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -127,4 +126,13 @@ fun CatalogItemCard(
             }
         }
     }
+}
+
+fun formatPrice(price: Double): String {
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = ' '
+        decimalSeparator = ','
+    }
+    val formatter = DecimalFormat("#,##0.00", symbols)
+    return formatter.format(price)
 }

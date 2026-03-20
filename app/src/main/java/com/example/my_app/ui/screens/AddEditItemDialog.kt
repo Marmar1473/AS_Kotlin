@@ -1,6 +1,5 @@
 package com.example.my_app.ui.screens
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import androidx.core.net.toUri
 
 @Composable
 fun AddEditItemDialog(
@@ -33,7 +33,7 @@ fun AddEditItemDialog(
     var t by remember { mutableStateOf(initialTitle) }
     var d by remember { mutableStateOf(initialDescription) }
     var p by remember { mutableStateOf(initialPrice) }
-    var selectedUri by remember { mutableStateOf<Uri?>(initialImageUri?.let { Uri.parse(it) }) }
+    var selectedUri by remember { mutableStateOf(initialImageUri?.toUri()) }
     var error by remember { mutableStateOf<String?>(null) }
 
     val photoPicker = rememberLauncherForActivityResult(
@@ -52,7 +52,7 @@ fun AddEditItemDialog(
         t = initialTitle
         d = initialDescription
         p = initialPrice
-        selectedUri = initialImageUri?.let { Uri.parse(it) }
+        selectedUri = initialImageUri?.toUri()
         error = null
     }
 
@@ -116,7 +116,7 @@ fun AddEditItemDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                val price = p.replace(",", ".").toDoubleOrNull()
+                val price = p.replace(",", ".").replace("\\s+".toRegex(), "").toDoubleOrNull()
                 when {
                     t.isBlank() -> error = "Название не может быть пустым"
                     price == null -> error = "Введите корректную цену (например 9999.99)"

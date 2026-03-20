@@ -1,7 +1,5 @@
 package com.example.my_app.data.remote
 
-import com.google.gson.annotations.SerializedName
-
 data class ProductDto(
     val id: Int,
     val title: String,
