@@ -1,5 +1,6 @@
 package com.example.my_app.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,16 +26,26 @@ class AuthViewModel : ViewModel() {
     }
 
     fun signUp(email: String, pass: String) {
+        Log.d("AuthDebug", "Попытка регистрации: email=$email")
+
         if (email.isBlank() || pass.isBlank()) {
             _authState.value = AuthUiState.Error("Заполните все поля")
             return
         }
+
+        if (pass.length < 6) {
+            Log.e("AuthDebug", "Ошибка: слишком короткий пароль!")
+            _authState.value = AuthUiState.Error("Пароль должен быть не менее 6 символов")
+            return
+        }
+
         _authState.value = AuthUiState.Loading
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _authState.value = AuthUiState.Success
                 } else {
+                    Log.e("AuthDebug", "Ошибка Firebase: ${task.exception?.message}")
                     _authState.value = AuthUiState.Error(task.exception?.message ?: "Ошибка регистрации")
                 }
             }
